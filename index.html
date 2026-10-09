@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Para Alexandra</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #07060a;
+    --red: #d1162b;
+    --gold: #e8b84a;
+    --text: #e9e1d8;
+    --mute: #8d8590;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg); color: var(--text);
+    font-family: 'Cormorant Garamond', serif;
+    min-height: 100vh; display: flex; justify-content: center;
+    padding: 22px 14px 48px; position: relative; overflow-x: hidden;
+  }
+  /* pulso tipo bombo, 150 bpm en compases de 4 */
+  body::before {
+    content: ""; position: fixed; inset: 0; pointer-events: none;
+    background: radial-gradient(ellipse at 50% 115%, rgba(209,22,43,.45), transparent 62%);
+    animation: kick 1.6s ease-out infinite;
+  }
+  body::after {
+    content: ""; position: fixed; inset: 0; pointer-events: none;
+    background-image:
+      linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px);
+    background-size: 44px 44px;
+    -webkit-mask-image: radial-gradient(ellipse at center, #000 25%, transparent 78%);
+            mask-image: radial-gradient(ellipse at center, #000 25%, transparent 78%);
+  }
+  @keyframes kick { 0% { opacity: 1; } 30% { opacity: .35; } 100% { opacity: .35; } }
+
+  .wrap { position: relative; z-index: 2; width: 100%; max-width: 580px; }
+  header { text-align: center; margin-bottom: 22px; }
+  header h1 {
+    font-family: 'Cinzel', serif; font-weight: 600; font-size: 2rem;
+    letter-spacing: .28em; color: var(--gold); text-transform: uppercase;
+    text-shadow: 0 0 22px rgba(232,184,74,.35);
+  }
+  header small {
+    display: block; margin-top: 8px; font: 400 .7rem 'Space Mono', monospace;
+    letter-spacing: .2em; color: var(--red); text-transform: uppercase;
+  }
+
+  .tabs { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; margin-bottom: 18px; }
+  .tab {
+    font: 400 .72rem 'Space Mono', monospace; text-transform: uppercase; letter-spacing: .08em;
+    background: #0e0c12; color: var(--mute);
+    border: 1px solid #2a2530; border-radius: 4px; padding: 9px 12px; cursor: pointer;
+    transition: all .2s;
+  }
+  .tab:hover { color: #fff; border-color: #55202a; }
+  .tab.active {
+    color: #fff; background: #1a0810; border-color: var(--red);
+    box-shadow: 0 0 16px rgba(209,22,43,.55), inset 0 0 10px rgba(209,22,43,.25);
+  }
+
+  .panel {
+    background: rgba(14,12,18,.88); border: 1px solid #261f2c; border-radius: 6px;
+    padding: 26px 22px 30px; min-height: 330px; position: relative;
+    box-shadow: 0 20px 60px rgba(0,0,0,.6);
+  }
+  .panel::before, .panel::after {
+    content: ""; position: absolute; width: 16px; height: 16px; border: 2px solid var(--red);
+  }
+  .panel::before { top: -1px; left: -1px; border-right: none; border-bottom: none; }
+  .panel::after { bottom: -1px; right: -1px; border-left: none; border-top: none; }
+
+  .kind { font: 400 .68rem 'Space Mono', monospace; letter-spacing: .22em; text-transform: uppercase; color: var(--red); margin-bottom: 8px; }
+  .title { font-family: 'Cinzel', serif; font-weight: 400; font-size: 1.55rem; color: var(--gold); margin-bottom: 20px; line-height: 1.25; }
+  .verse {
+    display: grid; grid-template-columns: 26px 1fr; gap: 4px;
+    font-size: 1.28rem; line-height: 1.5; margin-bottom: 12px;
+    opacity: 0; animation: rise-in .7s ease forwards;
+  }
+  .verse .n { font: 700 .66rem 'Space Mono', monospace; color: var(--red); padding-top: 8px; }
+  .moral {
+    margin-top: 18px; padding-top: 14px; border-top: 1px solid #2a2230;
+    font-style: italic; color: var(--gold); font-size: 1.2rem; line-height: 1.45;
+    opacity: 0; animation: rise-in .8s ease forwards;
+  }
+  @keyframes rise-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+
+  /* pestaña de flores */
+  #flowerPanel { display: none; }
+  .fieldBox { width: 100%; margin: 4px 0 20px; border-radius: 4px; overflow: hidden; border: 1px solid #2a1a24; }
+  #field { display: block; width: 100%; }
+  .question {
+    font-family: 'Cinzel', serif; font-size: 1.55rem; text-align: center; line-height: 1.3;
+    color: #fff; margin: 24px 0 18px;
+    text-shadow: 0 0 18px rgba(209,22,43,.9), 0 0 36px rgba(209,22,43,.5);
+  }
+  .reply label { display: block; font: 400 .72rem 'Space Mono', monospace; letter-spacing: .16em; text-transform: uppercase; color: var(--gold); margin-bottom: 8px; }
+  .reply textarea {
+    width: 100%; min-height: 120px; resize: vertical; padding: 14px;
+    background: #0b090e; color: var(--text); font: 1.2rem 'Cormorant Garamond', serif;
+    border: 1px solid #3a2a38; border-radius: 4px; outline: none; transition: all .2s;
+  }
+  .reply textarea::placeholder { color: #6d6372; font-style: italic; }
+  .reply textarea:focus { border-color: var(--red); box-shadow: 0 0 14px rgba(209,22,43,.4); }
+  .send {
+    display: block; margin: 14px auto 0; cursor: pointer;
+    font: 700 .78rem 'Space Mono', monospace; letter-spacing: .2em; text-transform: uppercase;
+    color: #fff; background: linear-gradient(135deg, #a10f20, var(--red));
+    border: 1px solid #ff4a5e; border-radius: 4px; padding: 13px 34px;
+    box-shadow: 0 0 20px rgba(209,22,43,.55); transition: transform .2s, box-shadow .2s;
+  }
+  .send:hover { transform: translateY(-2px); box-shadow: 0 0 32px rgba(209,22,43,.85); }
+  .send:disabled { opacity: .55; cursor: wait; }
+  .status { margin-top: 14px; text-align: center; font-size: 1.15rem; font-style: italic; color: var(--gold); min-height: 1.5em; }
+
+  .ember {
+    position: fixed; bottom: -10px; width: 4px; height: 4px; border-radius: 50%;
+    background: #ff4a3a; box-shadow: 0 0 8px 2px rgba(255,70,50,.8);
+    animation: rise linear forwards; z-index: 1; pointer-events: none;
+  }
+  @keyframes rise { to { transform: translate(var(--dx), -110vh); opacity: 0; } }
+
+  @media (prefers-reduced-motion: reduce) {
+    body::before, .ember { animation: none; }
+  }
+
+  /* pestañas bloqueadas hasta llegar a ellas */
+  .tab.locked { opacity: .3; cursor: not-allowed; pointer-events: none; }
+
+  /* botón continuar */
+  .next {
+    display: block; margin: 26px auto 0; cursor: pointer;
+    font: 700 .78rem 'Space Mono', monospace; letter-spacing: .2em; text-transform: uppercase;
+    color: #fff; background: linear-gradient(135deg, #a10f20, var(--red));
+    border: 1px solid #ff4a5e; border-radius: 4px; padding: 13px 34px;
+    box-shadow: 0 0 20px rgba(209,22,43,.55);
+    opacity: 0; pointer-events: none; transition: opacity .8s ease, transform .2s, box-shadow .2s;
+  }
+  .next.ready { opacity: 1; pointer-events: auto; }
+  .next.ready:hover { transform: translateY(-2px); box-shadow: 0 0 32px rgba(209,22,43,.85); }
+
+  /* ventana de bienvenida */
+  #intro {
+    position: fixed; inset: 0; z-index: 50; display: flex; align-items: center; justify-content: center;
+    padding: 20px; background: rgba(7,6,10,.97); transition: opacity .9s ease;
+  }
+  #intro.hide { opacity: 0; pointer-events: none; }
+  #intro .card {
+    max-width: 460px; width: 100%; text-align: center; padding: 34px 26px 30px;
+    background: rgba(14,12,18,.95); border: 1px solid #261f2c; border-radius: 6px;
+    box-shadow: 0 20px 60px rgba(0,0,0,.7), 0 0 40px rgba(209,22,43,.2);
+  }
+  #intro h2 { font-family: 'Cinzel', serif; font-weight: 400; font-size: 1.8rem; color: var(--gold); margin-bottom: 18px; }
+  #intro p { font-size: 1.35rem; line-height: 1.55; margin-bottom: 8px; }
+  #intro .next { opacity: 1; pointer-events: auto; margin-top: 24px; }
+
+  /* control de música */
+  #musicBtn {
+    position: fixed; top: 12px; right: 12px; z-index: 40; cursor: pointer;
+    width: 40px; height: 40px; border-radius: 50%; font-size: 1.1rem;
+    background: #0e0c12; color: var(--text); border: 1px solid #2a2530; display: none;
+  }
+  #musicBtn:hover { border-color: var(--red); }
+  /* reproductor de YouTube: solo audio, sin verse */
+  #ytWrap { position: fixed; left: 0; bottom: 0; width: 1px; height: 1px; opacity: 0.01; pointer-events: none; overflow: hidden; z-index: -1; }
+</style>
+</head>
+<body>
+<div id="intro">
+  <div class="card">
+    <h2>Hola 🌻</h2>
+    <p>Estaba programando aquí en el trabajo cuando me pregunté:</p>
+    <p>¿cómo no he hecho algo con mis propias manos, como programarte algo a ti, mi amor?</p>
+    <button class="next" id="introBtn">Continuar</button>
+  </div>
+</div>
+<button id="musicBtn" title="Música" aria-label="Activar o silenciar música">🔊</button>
+<div id="ytWrap"><div id="ytPlayer"></div></div>
+<div class="wrap">
+  <header>
+    <h1>Alexandra</h1>
+    <small>// 150 bpm · y un corazón que vuelve</small>
+  </header>
+
+  <nav class="tabs" id="tabs"></nav>
+
+  <section class="panel" id="poemPanel"></section>
+
+  <section class="panel" id="flowerPanel">
+    <div class="kind">Cantar de los girasoles</div>
+    <h2 class="title">Estás sin tus flores amarillas</h2>
+    <div class="fieldBox"><canvas id="field"></canvas></div>
+
+    <p class="verse" style="animation-delay:.1s"><span class="n">1</span><span>Eran tuyas y no pude dártelas porque estábamos lejos. Hoy te las traigo igual, no por lo que fue, sino porque sigues mereciéndolas.</span></p>
+    <p class="verse" style="animation-delay:.35s"><span class="n">2</span><span>No hay apuro. Responde cuando lo sientas, o no respondas: yo sigo con mi vida y con la puerta abierta.</span></p>
+
+    <div class="question">¿Quieres ser el amor de mi vida?</div>
+
+    <form class="reply" id="replyForm">
+      <label for="reply">Escribe aquí, amor, tu respuesta</label>
+      <textarea id="reply" placeholder="Escríbeme aquí tu respuesta, y me llegará directamente a mi correo" required></textarea>
+      <button type="submit" class="send" id="sendBtn">Enviar respuesta</button>
+      <div class="status" id="status"></div>
+    </form>
+  </section>
+</div>
+
+<script>
+/* ============ CONTENIDO ============ */
+const poems = [
+  { tab: "Hola", kind: "Saludo", title: "Para ti", verses: [
+    "Hola, Alexandra.",
+    "No vengo a pedirte nada. Vengo a decirte cosas que son verdad.",
+    "Léelas con calma. Lo que es bueno no corre."
+  ], moral: "Esto es para ti. Tómalo a tu ritmo." },
+
+  { tab: "Te quiero", kind: "Proverbio", title: "Sin adornos", verses: [
+    "Te quiero. Lo digo sin vueltas, porque lo cierto no necesita adorno.",
+    "Querer no es necesitar: yo estoy bien, y contigo estaría mejor.",
+    "Mi cariño no cobra ni exige; está ahí, como una luz que se deja prendida."
+  ], moral: "El que quiere bien no ata: abre la puerta y deja la luz encendida." },
+
+  { tab: "Me gustas", kind: "Cantar", title: "Lo que no se me pasó", verses: [
+    "Me gustas, Alexandra, y no es costumbre ni recuerdo: es de hoy.",
+    "Me gusta lo que eres cuando no intentas serlo.",
+    "Y me estás conquistando otra vez, sin proponértelo, sin darte cuenta."
+  ], moral: "Lo que gusta de verdad no se persigue: se nota." },
+
+  { tab: "7 años", kind: "Crónica", title: "Los siete años", verses: [
+    "Siete años no se borran: se llevan puestos, como una canción que uno sabe de memoria.",
+    "Fuimos muchas cosas en ellos: risa, cansancio, casa, silencio, crecimiento.",
+    "No te los nombro para cobrarte nada. Te los nombro porque fueron buenos, y porque me hicieron quien soy."
+  ], moral: "Lo vivido no pide nada de vuelta. Solo se agradece." },
+
+  { tab: "2 años", kind: "Refrán", title: "Dos años", verses: [
+    "Dos años separados, y cada uno aprendió a estar solo.",
+    "Yo aprendí que puedo estar bien sin ti. Por eso lo que siento ahora es una elección, no una necesidad.",
+    "Lo que vuelve después de haberse podido ir del todo, vuelve de verdad."
+  ], moral: "Quien elige volver no vuelve por miedo a la soledad." },
+
+  { tab: "Volvimos", kind: "Eclesiastés", title: "Tiempo de volver", verses: [
+    "Hay un tiempo para soltar y un tiempo para abrazar, y ninguno llega antes de lo que le toca.",
+    "Nos fuimos distintos y volvimos distintos, y eso me gusta más.",
+    "Qué bueno que volvimos, mi amor. Sin prisa y sin promesas gigantes: con los pies en la tierra y las manos abiertas."
+  ], moral: "No te prometo el cielo. Te prometo presencia." }
+];
+const FLOWER_INDEX = poems.length;
+
+/* ============ PESTAÑAS ============ */
+const tabsEl = document.getElementById('tabs');
+const poemPanel = document.getElementById('poemPanel');
+const flowerPanel = document.getElementById('flowerPanel');
+
+let unlocked = 0; // hasta qué pestaña puede llegar
+[...poems.map(p => p.tab), "🌻 Flores"].forEach((label, i) => {
+  const b = document.createElement('button');
+  b.className = 'tab'; b.textContent = label;
+  b.onclick = () => { if (i <= unlocked) show(i); };
+  tabsEl.appendChild(b);
+});
+
+function goNext(i) {
+  unlocked = Math.max(unlocked, i + 1);
+  show(i + 1);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function renderPoem(p, idx) {
+  poemPanel.innerHTML =
+    `<div class="kind">${p.kind}</div><h2 class="title">${p.title}</h2>` +
+    p.verses.map((v, i) =>
+      `<p class="verse" style="animation-delay:${0.15 + i * 0.25}s"><span class="n">${i + 1}</span><span>${v}</span></p>`
+    ).join('') +
+    (p.moral ? `<p class="moral" style="animation-delay:${0.2 + p.verses.length * 0.25}s">${p.moral}</p>` : '') +
+    `<button class="next" id="nextBtn">Continuar</button>`;
+  const btn = document.getElementById('nextBtn');
+  btn.onclick = () => goNext(idx);
+  // el botón aparece unos segundos después, para que dé tiempo a leer
+  setTimeout(() => btn.classList.add('ready'), 2600);
+}
+
+function show(i) {
+  document.querySelectorAll('.tab').forEach((b, k) => {
+    b.classList.toggle('active', k === i);
+    b.classList.toggle('locked', k > unlocked);
+  });
+  if (i === FLOWER_INDEX) {
+    poemPanel.style.display = 'none';
+    flowerPanel.style.display = 'block';
+    startFlowers();
+  } else {
+    flowerPanel.style.display = 'none';
+    poemPanel.style.display = 'block';
+    stopFlowers();
+    renderPoem(poems[i], i);
+  }
+  for (let n = 0; n < 7; n++) spawnEmber();
+}
+
+/* ============ BRASAS ============ */
+function spawnEmber() {
+  const e = document.createElement('div');
+  e.className = 'ember';
+  e.style.left = Math.random() * 100 + 'vw';
+  e.style.setProperty('--dx', (Math.random() * 120 - 60) + 'px');
+  e.style.animationDuration = (4 + Math.random() * 5) + 's';
+  e.style.opacity = .4 + Math.random() * .6;
+  document.body.appendChild(e);
+  setTimeout(() => e.remove(), 9500);
+}
+setInterval(spawnEmber, 900);
+
+/* ============ GIRASOLES ============ */
+const TAU = Math.PI * 2;
+const rnd = (a, b) => a + Math.random() * (b - a);
+const cv = document.getElementById('field');
+const cx = cv.getContext('2d');
+let W = 0, H = 0, DPR = 1, flowers = [], flies = [], bg = null, glow = null, running = false;
+
+function makeHead(R, fog) {
+  const S = Math.ceil(R * 2.5);
+  const c = document.createElement('canvas');
+  c.width = c.height = Math.ceil(S * DPR);
+  const g = c.getContext('2d');
+  g.scale(DPR, DPR);
+  g.translate(S / 2, S / 2);
+
+  const petal = (len, wid) => {
+    g.beginPath();
+    g.moveTo(0, 0);
+    g.bezierCurveTo(wid * 1.15, -len * 0.3, wid * 0.65, -len * 0.78, 0, -len);
+    g.bezierCurveTo(-wid * 0.65, -len * 0.78, -wid * 1.15, -len * 0.3, 0, 0);
+    g.closePath();
+  };
+  const layer = (n, rot, lenMul, cols) => {
+    for (let i = 0; i < n; i++) {
+      const a = rot + i * TAU / n + rnd(-0.06, 0.06);
+      const len = R * lenMul * rnd(0.9, 1.08);
+      const wid = len * 0.19 * rnd(0.9, 1.12);
+      g.save(); g.rotate(a);
+      const gr = g.createLinearGradient(0, 0, 0, -len);
+      gr.addColorStop(0, cols[0]); gr.addColorStop(0.5, cols[1]); gr.addColorStop(1, cols[2]);
+      g.fillStyle = gr; petal(len, wid); g.fill();
+      g.strokeStyle = 'rgba(110,55,0,.35)'; g.lineWidth = 0.7;
+      g.beginPath(); g.moveTo(0, -len * 0.12); g.lineTo(0, -len * 0.92); g.stroke();
+      g.strokeStyle = 'rgba(110,55,0,.18)';
+      g.beginPath(); g.moveTo(0, -len * 0.2); g.lineTo(wid * 0.45, -len * 0.7); g.moveTo(0, -len * 0.2); g.lineTo(-wid * 0.45, -len * 0.7); g.stroke();
+      g.restore();
+    }
+  };
+
+  layer(24, 0, 1.0, ['#a85d00', '#e08e00', '#f4b50c']);
+  // sombra de profundidad entre capas
+  const sh = g.createRadialGradient(0, 0, R * 0.3, 0, 0, R * 0.78);
+  sh.addColorStop(0, 'rgba(70,30,0,.65)'); sh.addColorStop(1, 'rgba(70,30,0,0)');
+  g.fillStyle = sh; g.beginPath(); g.arc(0, 0, R * 0.78, 0, TAU); g.fill();
+  layer(24, TAU / 48, 0.93, ['#c97500', '#f7b307', '#ffd92a']);
+
+  // disco central con espiral de Fibonacci
+  const d = R * 0.42;
+  const base = g.createRadialGradient(0, 0, 0, 0, 0, d);
+  base.addColorStop(0, '#1b0d03'); base.addColorStop(0.7, '#3a1c07'); base.addColorStop(1, '#6a3d0f');
+  g.fillStyle = base; g.beginPath(); g.arc(0, 0, d, 0, TAU); g.fill();
+
+  const N = Math.min(520, Math.round(d * d * 0.38));
+  const dot = 0.85 * d / Math.sqrt(N);
+  for (let i = 1; i <= N; i++) {
+    const r = d * 0.97 * Math.sqrt(i / N), th = i * 2.399963;
+    const x = r * Math.cos(th), y = r * Math.sin(th), t = r / d;
+    const L = 7 + t * 20 + rnd(-2.5, 2.5);
+    g.fillStyle = `hsl(${30 + t * 14}, ${50 + t * 15}%, ${L}%)`;
+    g.beginPath(); g.ellipse(x, y, dot, dot * 0.8, th, 0, TAU); g.fill();
+    g.fillStyle = `rgba(255,205,120,${0.12 + t * 0.35})`;
+    g.beginPath(); g.arc(x - dot * 0.3, y - dot * 0.3, dot * 0.32, 0, TAU); g.fill();
+  }
+  // anillo de flósculos dorados
+  g.strokeStyle = 'rgba(222,150,35,.7)'; g.lineWidth = d * 0.1;
+  g.beginPath(); g.arc(0, 0, d * 0.95, 0, TAU); g.stroke();
+
+  // lejanía: oscurece hacia el fondo
+  if (fog > 0) {
+    g.globalCompositeOperation = 'source-atop';
+    g.fillStyle = `rgba(14,8,28,${fog})`;
+    g.fillRect(-S, -S, S * 2, S * 2);
+  }
+  return { img: c, S };
+}
+
+function buildBG() {
+  bg = document.createElement('canvas');
+  bg.width = W * DPR; bg.height = H * DPR;
+  const b = bg.getContext('2d'); b.scale(DPR, DPR);
+  let g = b.createLinearGradient(0, 0, 0, H);
+  g.addColorStop(0, '#04030a'); g.addColorStop(0.5, '#1a0a26'); g.addColorStop(0.78, '#55142b'); g.addColorStop(1, '#12060a');
+  b.fillStyle = g; b.fillRect(0, 0, W, H);
+  const gl = b.createRadialGradient(W * 0.7, H * 0.62, 0, W * 0.7, H * 0.62, W * 0.65);
+  gl.addColorStop(0, 'rgba(255,120,55,.42)'); gl.addColorStop(1, 'rgba(255,120,55,0)');
+  b.fillStyle = gl; b.fillRect(0, 0, W, H);
+  for (let i = 0; i < 55; i++) {
+    b.fillStyle = `rgba(255,255,255,${rnd(0.15, 0.8)})`;
+    b.beginPath(); b.arc(rnd(0, W), rnd(0, H * 0.5), rnd(0.4, 1.2), 0, TAU); b.fill();
+  }
+  g = b.createLinearGradient(0, H * 0.85, 0, H);
+  g.addColorStop(0, 'rgba(5,3,6,0)'); g.addColorStop(1, 'rgba(5,3,6,.95)');
+  b.fillStyle = g; b.fillRect(0, H * 0.85, W, H * 0.15);
+}
+
+function layout() {
+  flowers = [];
+  const k = Math.min(1.15, Math.max(0.7, W / 520));
+  const rows = [
+    { n: Math.max(4, Math.round(W / 85)),  scale: 0.55, top: H * 0.55, jit: H * 0.05, base: H - 30, fog: 0.55, sw: 2.2 },
+    { n: Math.max(3, Math.round(W / 115)), scale: 0.8,  top: H * 0.43, jit: H * 0.06, base: H - 8,  fog: 0.28, sw: 3.2 },
+    { n: Math.max(2, Math.round(W / 160)), scale: 1.1,  top: H * 0.30, jit: H * 0.07, base: H + 30, fog: 0,    sw: 4.6 }
+  ];
+  rows.forEach(row => {
+    for (let i = 0; i < row.n; i++) {
+      const x = (i + 0.5 + rnd(-0.3, 0.3)) * W / row.n;
+      const topY = row.top + rnd(-row.jit, row.jit);
+      const R = 40 * row.scale * k;
+      const L = 24 * (1 - row.fog * 0.55);
+      const f = {
+        x, baseY: row.base, topY, stemH: row.base - topY,
+        lean: rnd(-12, 12) * row.scale, phase: rnd(0, TAU),
+        R, S: 0, head: null, sw: row.sw * k, L,
+        persp: rnd(0.82, 1), tilt: rnd(-0.1, 0.1), leaves: []
+      };
+      const hd = makeHead(R, row.fog); f.head = hd.img; f.S = hd.S;
+      [0.22, 0.4, 0.56].forEach((u, j) => f.leaves.push({
+        u: u + rnd(-0.04, 0.04), side: (j + i) % 2 ? 1 : -1,
+        len: R * rnd(0.85, 1.1) * (1 - j * 0.12), ang: rnd(0.85, 1.25), ph: rnd(0, TAU)
+      }));
+      flowers.push(f);
+    }
+  });
+  flies = Array.from({ length: 22 }, () => ({
+    bx: rnd(0, W), by: rnd(H * 0.2, H * 0.85), sp: rnd(0.3, 0.9), ph: rnd(0, TAU), r: rnd(1.2, 2.6)
+  }));
+  // sprite del brillo
+  glow = document.createElement('canvas'); glow.width = glow.height = 32;
+  const g = glow.getContext('2d');
+  const gr = g.createRadialGradient(16, 16, 0, 16, 16, 16);
+  gr.addColorStop(0, 'rgba(255,225,130,1)'); gr.addColorStop(0.3, 'rgba(255,190,60,.5)'); gr.addColorStop(1, 'rgba(255,170,40,0)');
+  g.fillStyle = gr; g.fillRect(0, 0, 32, 32);
+}
+
+function wind(t, x) {
+  const gust = 0.5 + 0.5 * Math.sin(t * 0.35);
+  return (Math.sin(t * 1.3 + x * 0.012) * 0.55 + Math.sin(t * 2.7 + x * 0.03) * 0.22 + 0.35) * (0.55 + gust * 0.7);
+}
+const bez = (P0, C, P1, u) => {
+  const a = (1 - u) * (1 - u), b = 2 * (1 - u) * u, c = u * u;
+  return { x: a * P0.x + b * C.x + c * P1.x, y: a * P0.y + b * C.y + c * P1.y };
+};
+
+function drawLeaf(len, wid, L) {
+  const path = () => {
+    cx.beginPath(); cx.moveTo(0, 0);
+    cx.bezierCurveTo(wid * 1.1, -len * 0.15, wid * 0.95, -len * 0.7, 0, -len);
+    cx.bezierCurveTo(-wid * 0.95, -len * 0.7, -wid * 1.1, -len * 0.15, 0, 0);
+    cx.closePath();
+  };
+  const g = cx.createLinearGradient(0, 0, 0, -len);
+  g.addColorStop(0, `hsl(100,45%,${L * 0.75}%)`); g.addColorStop(1, `hsl(90,52%,${L * 1.3}%)`);
+  cx.fillStyle = g; path(); cx.fill();
+  cx.strokeStyle = 'rgba(0,0,0,.3)'; cx.lineWidth = 0.8;
+  cx.beginPath(); cx.moveTo(0, 0); cx.lineTo(0, -len * 0.92); cx.stroke();
+  cx.strokeStyle = 'rgba(0,0,0,.15)';
+  for (let v = 0.25; v < 0.8; v += 0.2) {
+    cx.beginPath();
+    cx.moveTo(0, -len * v); cx.lineTo(wid * 0.7, -len * (v + 0.15));
+    cx.moveTo(0, -len * v); cx.lineTo(-wid * 0.7, -len * (v + 0.15));
+    cx.stroke();
+  }
+}
+
+function drawFlower(f, t) {
+  const w = wind(t, f.x);
+  const dx = (w + Math.sin(t * 3.1 + f.phase) * 0.06) * f.stemH * 0.11;
+  const P0 = { x: f.x, y: f.baseY };
+  const P1 = { x: f.x + f.lean + dx, y: f.topY };
+  const C = { x: f.x + f.lean * 0.15 + dx * 0.25, y: f.baseY - f.stemH * 0.55 };
+
+  cx.lineCap = 'round';
+  cx.strokeStyle = `hsl(95,40%,${f.L * 0.55}%)`; cx.lineWidth = f.sw + 1.4;
+  cx.beginPath(); cx.moveTo(P0.x, P0.y); cx.quadraticCurveTo(C.x, C.y, P1.x, P1.y); cx.stroke();
+  cx.strokeStyle = `hsl(92,42%,${f.L}%)`; cx.lineWidth = f.sw;
+  cx.beginPath(); cx.moveTo(P0.x, P0.y); cx.quadraticCurveTo(C.x, C.y, P1.x, P1.y); cx.stroke();
+
+  for (const lf of f.leaves) {
+    const p = bez(P0, C, P1, lf.u);
+    cx.save();
+    cx.translate(p.x, p.y);
+    cx.rotate(lf.side * lf.ang + Math.sin(t * 2 + lf.ph) * 0.1 + w * 0.14 * lf.side);
+    drawLeaf(lf.len, lf.len * 0.5, f.L);
+    cx.restore();
+  }
+
+  const ang = Math.atan2(P1.x - C.x, -(P1.y - C.y));
+  cx.save();
+  cx.translate(P1.x, P1.y);
+  cx.rotate(ang * 0.9 + f.tilt + Math.sin(t * 1.7 + f.phase) * 0.03);
+  cx.scale(f.persp, 1);
+  cx.drawImage(f.head, -f.S / 2, -f.S / 2, f.S, f.S);
+  cx.restore();
+}
+
+function frame() {
+  if (!running) return;
+  const t = performance.now() / 1000;
+  cx.setTransform(DPR, 0, 0, DPR, 0, 0);
+  cx.drawImage(bg, 0, 0, W, H);
+  for (const f of flowers) drawFlower(f, t);
+  cx.globalCompositeOperation = 'lighter';
+  for (const s of flies) {
+    const x = s.bx + Math.sin(t * s.sp + s.ph) * 30 + wind(t, s.bx) * 14;
+    const y = s.by + Math.cos(t * s.sp * 0.8 + s.ph) * 18;
+    cx.globalAlpha = 0.35 + 0.65 * (0.5 + 0.5 * Math.sin(t * 2 + s.ph));
+    const sz = s.r * 8;
+    cx.drawImage(glow, x - sz / 2, y - sz / 2, sz, sz);
+  }
+  cx.globalAlpha = 1; cx.globalCompositeOperation = 'source-over';
+  requestAnimationFrame(frame);
+}
+
+function setupField() {
+  W = cv.parentElement.clientWidth;
+  H = Math.round(Math.min(400, Math.max(300, W * 0.72)));
+  DPR = Math.min(window.devicePixelRatio || 1, 2);
+  cv.width = W * DPR; cv.height = H * DPR; cv.style.height = H + 'px';
+  buildBG(); layout();
+}
+function startFlowers() {
+  if (running) return;
+  running = true; setupField(); requestAnimationFrame(frame);
+}
+function stopFlowers() { running = false; }
+window.addEventListener('resize', () => { if (running) setupField(); });
+
+/* ============ ENVIAR RESPUESTA ============ */
+const EMAIL = "leonardo.93@outlook.es";
+const form = document.getElementById('replyForm');
+const statusEl = document.getElementById('status');
+const sendBtn = document.getElementById('sendBtn');
+
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const text = document.getElementById('reply').value.trim();
+  if (!text) return;
+  sendBtn.disabled = true;
+  statusEl.textContent = "Enviando...";
+  try {
+    const res = await fetch("https://formsubmit.co/ajax/" + EMAIL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "Accept": "application/json" },
+      body: JSON.stringify({
+        _subject: "🌻 Alexandra respondió",
+        _template: "box",
+        Pregunta: "¿Quieres ser el amor de mi vida?",
+        Respuesta: text
+      })
+    });
+    let data = {};
+    try { data = await res.json(); } catch (_) {}
+    console.log("FormSubmit respuesta:", res.status, data);
+    if (!res.ok || data.success === false || data.success === "false") throw new Error(data.message || ("HTTP " + res.status));
+    statusEl.textContent = "Enviada. Gracias por responder, Alexandra.";
+    form.reset();
+    for (let n = 0; n < 25; n++) spawnEmber();
+  } catch (err) {
+    console.error("Error al enviar:", err);
+    // ya no se abre el correo solo: se muestra un aviso y un enlace opcional
+    statusEl.innerHTML = 'No se pudo enviar. Intenta otra vez en un momento, o <a id="mailFallback" href="mailto:' + EMAIL +
+      '?subject=' + encodeURIComponent("Respuesta de Alexandra 🌻") +
+      '&body=' + encodeURIComponent(text) + '" style="color:inherit;text-decoration:underline">envíala por correo</a>.';
+  } finally {
+    sendBtn.disabled = false;
+  }
+});
+
+/* ============ MÚSICA (YouTube, solo audio) ============ */
+const VIDEO_ID = "xAWDqdpOlu8";
+let yt = null, ytReady = false, wantPlay = false, muted = false;
+const musicBtn = document.getElementById('musicBtn');
+
+const ytScript = document.createElement('script');
+ytScript.src = "https://www.youtube.com/iframe_api";
+document.head.appendChild(ytScript);
+window.onYouTubeIframeAPIReady = () => {
+  yt = new YT.Player('ytPlayer', {
+    width: '200', height: '200', videoId: VIDEO_ID,
+    playerVars: { controls: 0, loop: 1, playlist: VIDEO_ID, playsinline: 1, rel: 0, modestbranding: 1 },
+    events: {
+      onReady: () => { ytReady = true; if (wantPlay) { yt.setVolume(80); yt.playVideo(); } },
+      onStateChange: (e) => { if (e.data === YT.PlayerState.ENDED) yt.playVideo(); }
+    }
+  });
+};
+
+function startMusic() {
+  wantPlay = true;
+  if (ytReady) { yt.setVolume(80); yt.playVideo(); }
+  musicBtn.style.display = 'block';
+}
+musicBtn.onclick = () => {
+  if (!ytReady) return;
+  muted = !muted;
+  if (muted) { yt.pauseVideo(); musicBtn.textContent = '🔇'; }
+  else { yt.playVideo(); musicBtn.textContent = '🔊'; }
+};
+
+/* ============ VENTANA DE BIENVENIDA ============ */
+const intro = document.getElementById('intro');
+document.getElementById('introBtn').onclick = () => {
+  startMusic(); // el clic permite que el navegador deje sonar el audio
+  intro.classList.add('hide');
+  setTimeout(() => intro.remove(), 1000);
+};
+
+show(0);
+</script>
+</body>
+</html>
